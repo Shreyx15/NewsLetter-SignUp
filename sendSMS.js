@@ -11,4 +11,4 @@ const sendsms = () => {
 }
 
 
-module.exports.sendsms = sendsms();
+module.exports.sendsms = sendsms;

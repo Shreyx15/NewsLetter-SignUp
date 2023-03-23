@@ -4,7 +4,7 @@ dotenv.config();
 
 
 
-const sendMail = function main() {
+const sendMail = function main(email) {
     // create transport
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -22,9 +22,9 @@ const sendMail = function main() {
     // send mail
     const mailOptions = {
         from: 'shreyv15@gmail.com',
-        to: ['legendarynoobx15@gmail.com', 'quincyvaghela112@gmail.com'],
-        subject: 'Test email',
-        text: 'This is a test email sent using nodemailer and Gmail API.'
+        to: email,
+        subject: 'Successful registration',
+        text: 'You have successfully subscribed to our NewsLetter!'
     };
 
     transporter.sendMail(mailOptions, (err, info) => {

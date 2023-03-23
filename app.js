@@ -2,18 +2,20 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser",);
 const https = require("https");
-
-const { urlencoded } = require("body-parser");
+const { urlencoded, json } = require("body-parser");
 const { url } = require("inspector");
 const { response } = require("express");
 const { sendMail } = require('./sendmail');
 const { sendsms } = require('./sendSMS');
 const { error } = require("console");
-
+const session = require('express-session');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
+require('dotenv').config();
+
+app.use(express.json());
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/index.html");
 })
@@ -44,16 +46,15 @@ app.post("/", function (req, res) {
 
     const options = {
         method: "POST",
-        auth: "Shrey1:5cd6eb3538bf116b762ef14db1341af8-us8"
+        auth: "Shrey1:507fe66da0cfd3dbc5fcc92fd293eb10-us8"
     };
 
     const request = https.request(url, options, function (response) {
 
         if (response.statusCode === 200) {
             res.sendFile(__dirname + "/success.html");
-            sendMail();
+            sendMail(req.body.email);
             // sendsms();
-
         }
         else {
             res.sendFile(__dirname + "/failure.html");
@@ -75,11 +76,12 @@ app.post("/failure", function (req, res) {
 
 app.get('/getusers', function (req, res) {
 
-    const API_KEY = "5cd6eb3538bf116b762ef14db1341af8-us8";
+    const API_KEY = "507fe66da0cfd3dbc5fcc92fd293eb10-us8";
     const options = {
         protocol: 'https:',
         host: "us8.api.mailchimp.com",
-        path: '/3.0/lists/407527eb4c',
+
+        path: '/3.0/lists/407527eb4c/members',
         method: "GET",
         headers: {
             'Authorization': `apikey ${API_KEY}`,
@@ -88,9 +90,11 @@ app.get('/getusers', function (req, res) {
     }
 
     const request = https.request(options, (response) => {
-        console.log(response.statusCode);
+        // console.log(response);
+        console.log(response);
         response.on("data", function (data) {
-            process.stdout.write(data);
+            const json = data.toString('utf-8')
+            console.log(JSON.parse(json));
         })
     });
 
